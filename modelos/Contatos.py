@@ -35,3 +35,6 @@ class Contatos:
 
     def email(self, email):
         self.email = email
+
+    def __str__(self):
+        return (f"Contatos(id= {self.id}, nome= {self.nome}, apelido= {self.apelido}, telefone= {self.telefone}, email= {self.email})\n")

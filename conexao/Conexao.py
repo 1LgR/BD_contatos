@@ -38,63 +38,88 @@ class Conexao:
             query = """
                 SELECT * FROM contatos
             """
-            cursor.execute(query, (contatos,))
+            cursor.execute(query)
             resultSet = cursor.fetchall()
-            pedidos = []
+            contatos = []
             for row in resultSet: 
-                pedidos.append(Contatos(row[0], row[1], row[2], row[3], row[4]))
+                contatos.append(Contatos(id=row[0], nome=row[1], apelido=row[2], telefone=row[3], email=row[4]))
             cursor.close()
-            return pedidos
+            return contatos
         except OperationalError as e:
-            print(f"Ocorreu um erro ao consultar os pedidos: {e}")
+            print(f"Ocorreu um erro ao consultar os contatos: {e}")
             return []
         
         
-    # def obter_itens_por_pedido(self, pedido_id):
-    #     if self.conexao is None:
-    #         print("Não há conexão com o banco de dados.")
-    #         return []
+    def listar_contato(self, contato_id):
+        if self.conexao is None:
+            print("Não há conexão com o banco de dados.")
+            return []
 
-    #     try:
-    #         cursor = self.conexao.cursor()
-    #         query = """
-    #             SELECT itens.nome, itens_pedido.quantidade, itens_pedido.preco_unitario
-    #             FROM itens_pedido
-    #             JOIN itens ON itens_pedido.item_id = itens.id
-    #             WHERE itens_pedido.pedido_id = %s
-    #         """
-    #         cursor.execute(query, (pedido_id,))
-    #         resultSet = cursor.fetchall()
-    #         itens = []
-    #         for row in resultSet:
-    #             itens.append(Item(None, row[0], None, row[1], None))
-    #         cursor.close()
-    #         return itens
-    #     except OperationalError as e:
-    #         print(f"Ocorreu um erro ao consultar os itens do pedido: {e}")
-    #         return []
+        try:
+            cursor = self.conexao.cursor()
+            query = """
+                SELECT *
+                FROM contatos
+                WHERE contatos.id = %s
+            """
+            cursor.execute(query, (contato_id,))
+            resultSet = cursor.fetchone()
+            contato = (Contatos(id=resultSet[0], nome=resultSet[1], apelido=resultSet[2], telefone=resultSet[3], email=resultSet[4]))
+            cursor.close()
+            return contato
+        except OperationalError as e:
+            print(f"Ocorreu um erro ao consultar o contato: {e}")
+            return []
         
         
-    # def obter_clientes_por_data(self, data_inicio, data_fim):
-    #     if self.conexao is None:
-    #         print("Não há conexão com o banco de dados.")
-    #         return []
+    def adicionar_contato(self, nome, apelido, telefone, email):
+        if self.conexao is None:
+            print("Não há conexão com o banco de dados.")
+            return []
 
-    #     try:
-    #         cursor = self.conexao.cursor()
-    #         query = """
-    #             SELECT DISTINCT clientes.*
-    #                 FROM clientes
-    #                 JOIN pedidos ON clientes.id = pedidos.cliente_id
-    #                 WHERE pedidos.data_pedido BETWEEN %s AND %s
-    #         """
-    #         cursor.execute(query, (data_inicio,data_fim,))
-    #         resultSet = cursor.fetchall()
-    #         clientes = []
-    #         for row in resultSet:
-    #             clientes.append(Cliente(row[0], row[1], row[2], row[3], row[4]))
-    #         cursor.close()
-    #         return clientes
-    #     except OperationalError as e:
-    #         print(f"Ocorreu um erro ao consultar os itens do pedido: {e}")
-    #         return []
+        try:
+            cursor = self.conexao.cursor()
+            query = """
+                INSERT INTO contatos(nome, apelido, telefone, email) VALUES (%s, %s, %s, %s)
+            """
+            cursor.execute(query, (nome,apelido,telefone,email))
+            return ("Contato Adicionado")
+        except OperationalError as e:
+            print(f"Ocorreu um erro ao adicionar o contato: {e}")
+            return []
+        
+    def Editar_contato(self, contato):
+        if self.conexao is None:
+            print("Não há conexão com o banco de dados.")
+            return []
+
+        try:
+            cursor = self.conexao.cursor()
+            query = """
+                UPDATE contatos SET nome = %s, apelido = %s, telefone = %s, email = %s Where id = %s
+            """
+            cursor.execute(query, (contato.nome, contato.apelido, contato.telefone, contato.email, contato.id))
+            self.conexao.commit()
+            cursor.close
+            return ("Contato Editado")
+        except OperationalError as e:
+            print(f"Ocorreu um erro ao editar o contato: {e}")
+            return []
+        
+    def Deletar_contato(self, contato_id):
+        if self.conexao is None:
+            print("Não há conexão com o banco de dados.")
+            return []
+
+        try:
+            cursor = self.conexao.cursor()
+            query = """
+                DELETE FROM contatos WHERE id = %s
+            """
+            cursor.execute(query, (contato_id,))
+            self.conexao.commit()
+            cursor.close()
+            return ("Contato Deletado")
+        except OperationalError as e:
+            print(f"Ocorreu um erro ao deletar o contato: {e}")
+            return []

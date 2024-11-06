@@ -1,5 +1,5 @@
 from conexao.Conexao import Conexao
-from modelos import Cliente, ItemPedido, Pedido, Endereco, FormaPagamento, Vendedor, Item
+from modelos.Contatos import Contatos
 
 conn = Conexao("agenda_contato", "postgres", "postgres", "localhost", "5432")
 conn.conectar()
@@ -18,23 +18,40 @@ if __name__ == "__main__":
         opcao = int(input("Digite a opção desejada: "))
         if opcao == 1:                        
             if conn:
-                pedidos = conn.obter_pedidos_por_cliente(id_cliente)
-                for pedido in pedidos:
-                    print(pedido)
+                contatos = conn.listar_contatos()
+                for contato in contatos:
+                    print(contato)
         elif opcao == 2:
-            id_pedido = int(input("Digite o ID do Pedido desejado: "))                        
+            contato_id = int(input("Digite o ID do Contato desejado: "))                        
             if conn:
-                itens = conn.obter_itens_por_pedido(id_pedido)
-                for item in itens:
-                    print(item.nome)
+                contato = conn.listar_contato(contato_id)
+                print(contato)
         elif opcao == 3:
-            print("Digite o intervalo de Datas desejado: ")                        
-            data_inicio = input("Digite a data de início: ")
-            data_fim = input("Digite a data de fim: ")
+            print("Digite os dados do contato: ")                        
+            nome = input("Digite o nome do contato: ")
+            apelido = input("Digite o apelido do contato: ")
+            telefone = input("Digite o telefone do contato: ")
+            email = input("Digite o email do contato: ")
             if conn:
-                clientes = conn.obter_clientes_por_data(data_inicio, data_fim)
-                for cliente in clientes:
-                    print(cliente)
+                adicionar = conn.adicionar_contato(nome, apelido, telefone, email)
+                print(adicionar)
+        elif opcao == 4:
+            print("Digite os dados do contato: ")
+            id = input("Digite o id do contato: ")                        
+            nome = input("Digite o nome do contato: ")
+            apelido = input("Digite o apelido do contato: ")
+            telefone = input("Digite o telefone do contato: ")
+            email = input("Digite o email do contato: ")
+            contato = Contatos(id, nome, apelido, telefone, email)
+            if conn:
+                adicionar = conn.Editar_contato(contato)
+                print(adicionar)
+        elif opcao == 5:
+            print("Digite os dados do contato: ")
+            contato_id = int(input("Digite o id do contato: "))                
+            if conn:
+                deletar = conn.Deletar_contato(contato_id)
+                print(deletar)
         elif opcao == 0:
             break
         else:
